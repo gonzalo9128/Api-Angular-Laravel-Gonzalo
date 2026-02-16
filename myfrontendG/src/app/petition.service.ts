@@ -41,12 +41,12 @@ export class PetitionService {
     );
   }
 
-  // Crear una nueva petición usando FormData (archivos binarios) [cite: 366]
+  // Crear una nueva petición usando FormData (archivos binarios)
   create(formData: FormData) {
     return this.http.post<{ data: Petition }>(this.API_URL, formData).pipe(
       tap(res => {
         const nuevaPetition = res.data || res;
-        // Añadimos la nueva al principio de la lista local [cite: 368-369]
+        // Añadimos la nueva al principio de la lista local
         this.#petitions.update(list => [nuevaPetition as Petition, ...list]);
       })
     );
