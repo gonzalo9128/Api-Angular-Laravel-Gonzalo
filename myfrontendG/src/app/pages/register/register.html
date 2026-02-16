@@ -1,0 +1,40 @@
+<p>register works!</p>
+<p>register works!</p>
+<h2>Register</h2>
+<form (ngSubmit)="register()" #form="ngForm">
+  <div>
+    <label>Name</label>
+    <input
+      type="text"
+      name="name"
+      [(ngModel)]="formData.name"
+      required
+    />
+  </div>
+  <div>
+    <label>Email</label>
+    <input
+      type="email"
+      name="email"
+      [(ngModel)]="formData.email"
+      required
+    />
+  </div>
+  <div>
+    <label>Password</label>
+    <input
+      type="password"
+      name="password"
+      [(ngModel)]="formData.password"
+      required
+      minlength="6"
+    />
+  </div>
+  <button type="submit" [disabled]="form.invalid">
+    Register
+  </button>
+  <p>
+    Already have an account?
+    <a routerLink="/login">Login</a>
+  </p>
+</form>
