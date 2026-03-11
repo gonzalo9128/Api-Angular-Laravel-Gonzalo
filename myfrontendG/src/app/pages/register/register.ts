@@ -1,32 +1,45 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { AuthService } from '../../auth/auth.service';
+
 @Component({
+  selector: 'app-register',
   standalone: true,
-  selector: 'app‐register',
-  imports: [FormsModule],
+  imports: [FormsModule, CommonModule, RouterLink],
   templateUrl: './register.html',
-  styleUrl: './register.css',
+  styleUrl: './register.css'
 })
-export class Register {
+export class RegisterComponent {
   formData = {
     name: '',
     email: '',
-    password: '',
+    password: ''
   };
+  errorMessage: string = '';
+
   constructor(
     private auth: AuthService,
     private router: Router
   ) {}
+
   register() {
+    this.errorMessage = '';
+
     this.auth.register(this.formData).subscribe({
-      next: () => {this.router.navigate(['/login']);
+      next: () => {
+        // Si se registra bien, lo mandamos a home
+        this.router.navigate(['/']);
       },
       error: (err) => {
-        console.error('Register error', err);
-        alert('Error registering user');
-      },
+        // 409: Conflicto (Email duplicado), 422: Validación fallida
+        if (err.status === 409 || err.status === 422) {
+          this.errorMessage = 'Este correo electrónico ya está registrado.';
+        } else {
+          this.errorMessage = 'Ocurrió un error al registrarse.';
+        }
+      }
     });
   }
 }

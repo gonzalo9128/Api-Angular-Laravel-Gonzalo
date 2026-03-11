@@ -138,7 +138,7 @@ class PetitionController extends Controller
             }
 
             $petition->firmas()->attach($user->id);
-            $petition->increment('signers'); // Adaptado: 'firmantes' -> 'signers' [cite: 273]
+            $petition->increment('signers');
 
             return $this->sendResponse($petition, 'Petición firmada con éxito', 201);
         } catch (Exception $e) {

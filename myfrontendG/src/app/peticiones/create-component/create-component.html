@@ -1,0 +1,52 @@
+<div class="container mt-5 mb-5">
+  <div class="card shadow-sm p-4">
+    <h2 class="mb-4 text-primary">Crear Nueva Petición</h2>
+
+    <form [formGroup]="itemForm" (ngSubmit)="onSubmit()">
+
+      <div class="mb-3">
+        <label class="form-label fw-bold">Título de la petición</label>
+        <input formControlName="titulo" type="text" placeholder="Ej: Salvar el parque central..." class="form-control">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-bold">Descripción detallada</label>
+        <textarea formControlName="descripcion" rows="4" placeholder="Explica por qué es importante..." class="form-control"></textarea>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-bold">Destinatario</label>
+        <input formControlName="destinatario" type="text" placeholder="Ej: Ayuntamiento de Logroño" class="form-control">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-bold">Categoría</label>
+        <select formControlName="categoria_id" class="form-select">
+          <option value="" disabled selected>Selecciona Categoría...</option>
+
+          @for (categoria of categorias; track categoria.id) {
+            <option [value]="categoria.id">{{ categoria.name }}</option>
+          }
+
+        </select>
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label fw-bold">Imagen de portada</label>
+        <input type="file" (change)="onFileSelected($event)" accept="image/*" class="form-control">
+      </div>
+
+      <div class="d-grid">
+        <button type="submit" [disabled]="itemForm.invalid || loading() || !fileToUpload" class="btn btn-primary btn-lg">
+          @if (loading()) {
+            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            Guardando y subiendo imagen...
+          } @else {
+            Publicar Petición
+          }
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

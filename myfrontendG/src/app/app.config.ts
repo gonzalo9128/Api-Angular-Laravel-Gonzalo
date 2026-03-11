@@ -1,7 +1,7 @@
 import { ApplicationConfig } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http'; // 👈 IMPORTANTE
-import { routes } from './app.routes';
+import { routes } from './app.route';
 import { AuthInterceptor } from './auth/auth-interceptor'; // 👈 Tu interceptor corregido
 
 export const appConfig: ApplicationConfig = {

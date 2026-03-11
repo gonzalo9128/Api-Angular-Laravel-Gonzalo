@@ -1,6 +1,40 @@
-<p>login works!</p>
-<form (ngSubmit)="login()">
-  <input [(ngModel)]="email" name="email" />
-  <input [(ngModel)]="password" type="password" name="password" />
-  <button>Login</button>
-</form>
+<div class="container mt-5 mb-5 d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+  <div class="card shadow border-0 rounded-4" style="width: 100%; max-width: 450px;">
+    <div class="card-body p-5">
+
+      <div class="text-center mb-4">
+        <h2 class="fw-bold text-dark">¡Hola de nuevo!</h2>
+        <p class="text-muted">Inicia sesión para apoyar causas</p>
+      </div>
+
+      @if (errorMessage) {
+        <div class="alert alert-danger rounded-3 border-0 shadow-sm">
+          {{ errorMessage }}
+        </div>
+      }
+
+      <form (ngSubmit)="login()">
+
+        <div class="form-floating mb-3">
+          <input type="email" [(ngModel)]="email" name="email" class="form-control rounded-3 bg-light border-0" id="loginEmail" placeholder="correo@ejemplo.com" required>
+          <label for="loginEmail">Correo electrónico</label>
+        </div>
+
+        <div class="form-floating mb-4">
+          <input type="password" [(ngModel)]="password" name="password" class="form-control rounded-3 bg-light border-0" id="loginPass" placeholder="Contraseña" required>
+          <label for="loginPass">Contraseña</label>
+        </div>
+
+        <button type="submit" [disabled]="!email || !password" class="btn btn-danger btn-lg w-100 rounded-pill fw-bold shadow-sm">
+          Entrar
+        </button>
+      </form>
+
+      <div class="text-center border-top pt-4 mt-4">
+        <span class="text-muted">¿No tienes cuenta?</span>
+        <a routerLink="/register" class="text-danger fw-bold text-decoration-none ms-1">Regístrate</a>
+      </div>
+
+    </div>
+  </div>
+</div>

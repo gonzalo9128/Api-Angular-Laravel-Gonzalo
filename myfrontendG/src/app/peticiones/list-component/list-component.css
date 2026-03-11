@@ -1,0 +1,34 @@
+/* Bordes redondeados para tu tarjeta */
+.petition-card {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Efecto suave al pasar el ratón */
+.transition {
+  transition: all 0.3s ease-in-out;
+}
+
+/* La tarjeta se levanta un poquito y hace sombra al hacer hover */
+.hover-shadow:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,.12) !important;
+}
+
+/* Asegura que la imagen de la portada encaje perfecta sin deformarse */
+.object-fit-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Si quieres que el botón rojo tenga el toque exacto de Change.org */
+.btn-danger {
+  background-color: #ed2939;
+  border-color: #ed2939;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+  border-color: #bd2130;
+}

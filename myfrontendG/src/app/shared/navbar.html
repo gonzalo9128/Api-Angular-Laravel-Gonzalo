@@ -1,0 +1,35 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-3 mb-4">
+  <div class="container">
+    <a class="navbar-brand fw-bold text-danger fs-3" routerLink="/">Change.org</a>
+
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarMenu">
+      <div class="navbar-nav ms-auto align-items-center gap-3">
+
+        <a routerLink="/peticiones" class="nav-link fw-bold text-dark me-2">
+          <i class="bi bi-list-ul me-1"></i> Explorar Peticiones
+        </a>
+
+        @if (isLoggedIn()) {
+          <span class="navbar-text me-3 text-muted">
+            Hola, <b class="text-danger">{{ currentUser()?.name }}</b>
+
+          </span>
+
+          <a routerLink="/peticiones/create" class="btn btn-outline-danger rounded-pill fw-bold px-4">
+            Crear Petición
+          </a>
+          <button (click)="logout()" class="btn btn-danger rounded-pill fw-bold px-4">
+            Salir
+          </button>
+        } @else {
+          <a routerLink="/login" class="nav-link fw-bold text-dark">Inicia sesión</a>
+          <a routerLink="/register" class="btn btn-danger rounded-pill fw-bold px-4">Regístrate</a>
+        }
+      </div>
+    </div>
+  </div>
+</nav>

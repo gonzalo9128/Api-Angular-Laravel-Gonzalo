@@ -1,40 +1,45 @@
-<p>register works!</p>
-<p>register works!</p>
-<h2>Register</h2>
-<form (ngSubmit)="register()" #form="ngForm">
-  <div>
-    <label>Name</label>
-    <input
-      type="text"
-      name="name"
-      [(ngModel)]="formData.name"
-      required
-    />
+<div class="container mt-5 mb-5 d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+  <div class="card shadow border-0 rounded-4" style="width: 100%; max-width: 480px;">
+    <div class="card-body p-5">
+
+      <div class="text-center mb-4">
+        <h2 class="fw-bold text-danger">Crear cuenta</h2>
+        <p class="text-muted">Únete a la comunidad y empieza a cambiar el mundo</p>
+      </div>
+
+      @if (errorMessage) {
+        <div class="alert alert-danger rounded-3 border-0 shadow-sm mb-4">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ errorMessage }}
+        </div>
+      }
+
+      <form (ngSubmit)="register()">
+
+        <div class="form-floating mb-3">
+          <input type="text" [(ngModel)]="formData.name" name="name" class="form-control rounded-3 bg-light border-0" id="regName" placeholder="Tu nombre" required>
+          <label for="regName">Nombre completo</label>
+        </div>
+
+        <div class="form-floating mb-3">
+          <input type="email" [(ngModel)]="formData.email" name="email" class="form-control rounded-3 bg-light border-0" id="regEmail" placeholder="correo@ejemplo.com" required>
+          <label for="regEmail">Correo electrónico</label>
+        </div>
+
+        <div class="form-floating mb-4">
+          <input type="password" [(ngModel)]="formData.password" name="password" class="form-control rounded-3 bg-light border-0" id="regPass" placeholder="Contraseña" required>
+          <label for="regPass">Contraseña</label>
+        </div>
+
+        <button type="submit" [disabled]="!formData.name || !formData.email || !formData.password" class="btn btn-danger btn-lg w-100 rounded-pill fw-bold shadow-sm">
+          Registrarme ahora
+        </button>
+      </form>
+
+      <div class="text-center border-top pt-4 mt-4">
+        <span class="text-muted">¿Ya eres parte de Peticiones.org?</span>
+        <a routerLink="/login" class="text-danger fw-bold text-decoration-none ms-1">Inicia sesión</a>
+      </div>
+
+    </div>
   </div>
-  <div>
-    <label>Email</label>
-    <input
-      type="email"
-      name="email"
-      [(ngModel)]="formData.email"
-      required
-    />
-  </div>
-  <div>
-    <label>Password</label>
-    <input
-      type="password"
-      name="password"
-      [(ngModel)]="formData.password"
-      required
-      minlength="6"
-    />
-  </div>
-  <button type="submit" [disabled]="form.invalid">
-    Register
-  </button>
-  <p>
-    Already have an account?
-    <a routerLink="/login">Login</a>
-  </p>
-</form>
+</div>

@@ -1,0 +1,61 @@
+<div class="container mt-5 mb-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card shadow-sm border-0 rounded-4 p-4">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h2 class="fw-bold mb-0">Editar Petición</h2>
+          <a routerLink="/peticiones" class="btn btn-outline-secondary rounded-pill btn-sm">Cancelar</a>
+        </div>
+
+        <form [formGroup]="itemForm" (ngSubmit)="onSubmit()">
+
+          <div class="mb-3">
+            <label class="form-label fw-bold">Título de la petición</label>
+            <input type="text" formControlName="titulo" class="form-control form-control-lg" placeholder="Ej: Salvemos el parque central">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold">¿A quién va dirigida?</label>
+            <input type="text" formControlName="destinatario" class="form-control" placeholder="Ej: Ayuntamiento de Madrid">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold">Categoría</label>
+            <select formControlName="categoria_id" class="form-select">
+              <option value="" disabled>Selecciona Categoría...</option>
+              @for (categoria of categorias; track categoria.id) {
+                <option [value]="categoria.id">{{ categoria.name }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-bold">Explica el problema</label>
+            <textarea formControlName="descripcion" class="form-control" rows="6" placeholder="Cuanta más información des, más firmas conseguirás..."></textarea>
+          </div>
+
+          <div class="mb-4 p-3 bg-light rounded border">
+            <label class="form-label fw-bold d-block">Imagen actual</label>
+            <div class="text-center mb-3">
+              <img [src]="getImagenUrl()" alt="Imagen actual" class="img-thumbnail" style="max-height: 200px; object-fit: cover;">
+            </div>
+            <label class="form-label fw-bold">¿Quieres cambiar la foto?</label>
+            <input type="file" (change)="onFileSelected($event)" class="form-control" accept="image/*">
+            <small class="text-muted">Si no seleccionas nada, se mantendrá la imagen actual.</small>
+          </div>
+
+          <button type="submit" [disabled]="itemForm.invalid || loading()" class="btn btn-danger btn-lg w-100 rounded-pill fw-bold hover-shadow">
+            @if (loading()) {
+              <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              Guardando cambios...
+            } @else {
+              Actualizar Petición
+            }
+          </button>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

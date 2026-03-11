@@ -1,27 +1,40 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { AuthService } from '../../auth/auth.service';
-import { Router } from '@angular/router';
+
 @Component({
-  selector: 'app‐login',
+  selector: 'app-login',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, CommonModule, RouterLink],
   templateUrl: './login.html',
-  styleUrl: './login.css',
+  styleUrl: './login.css'
 })
-export class Login {
+export class LoginComponent {
   email = '';
   password = '';
+  errorMessage = '';
+
   constructor(private auth: AuthService, private router: Router) {}
+
   login() {
-    this.auth.login({ email: this.email, password: this.password })
-      .subscribe({
-        next: () => {
-          this.router.navigate(['/profile']);
-        },
-        error: err => {
-          console.error('LOGIN ERROR', err);
+    this.errorMessage = ''; // Reseteamos errores previos
+
+    this.auth.login({ email: this.email, password: this.password }).subscribe({
+      next: () => {
+        // Si todo va bien, nos vamos a las peticiones
+        this.router.navigate(['/peticiones']);
+      },
+      error: (err: any) => {
+        console.error('LOGIN ERROR', err);
+        if (err.status === 401) {
+          this.errorMessage = 'El email o la contraseña son incorrectos.';
+          this.password = ''; // Borramos pass para facilitar reintento
+        } else {
+          this.errorMessage = 'Ocurrió un error inesperado. Inténtalo luego.';
         }
-      });
+      }
+    });
   }
 }

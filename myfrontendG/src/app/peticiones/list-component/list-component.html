@@ -1,0 +1,87 @@
+<section class="container mt-5 mb-5">
+
+  <h2 class="fw-bold mb-4 border-bottom pb-2">Listado de Peticiones</h2>
+
+  @if (cargando) {
+    <div class="text-center mt-5">
+      <div class="spinner-border text-danger" role="status"></div>
+      <p class="mt-2 text-muted">Cargando peticiones...</p>
+    </div>
+  } @else if (peticiones.length === 0) {
+    <div class="alert alert-info text-center">
+      <h4>Vaya, no hay peticiones todavía.</h4>
+      <p>¡Sé el primero en cambiar el mundo!</p>
+      <a routerLink="/peticiones/create" class="btn btn-danger rounded-pill fw-bold">Inicia una petición</a>
+    </div>
+  } @else {
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+      @for (peticion of peticiones; track peticion.id) {
+        <div class="col">
+          <div class="card h-100 shadow-sm border-0 petition-card hover-shadow transition">
+
+            <div class="ratio ratio-16x9 bg-light">
+              @if (peticion.files && peticion.files.length > 0) {
+                <img [src]="getImagenUrl(peticion)"
+                     class="card-img-top object-fit-cover"
+                     [alt]="peticion.title"
+                     style="height: 200px;">
+              } @else {
+                <img [src]="'https://picsum.photos/seed/' + peticion.id + '/400/250'"
+                     class="card-img-top object-fit-cover"
+                     alt="Imagen genérica"
+                     style="height: 200px;">
+              }
+            </div>
+
+            <div class="card-body">
+              <h5 class="card-title fw-bold text-dark text-truncate">
+                <a [routerLink]="['/peticiones', peticion.id]" class="text-decoration-none text-dark">
+                  {{ peticion.title }}
+                </a>
+              </h5>
+
+              <div class="card-author d-flex align-items-center my-3">
+                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px; font-size: 14px;">
+                  {{ (peticion.user?.name || 'A').charAt(0).toUpperCase() }}
+                </div>
+                <span class="small text-muted">por </span>
+                <span class="fs-6 fw-bold ms-1">{{ peticion.user?.name || 'Anónimo' }}</span>
+              </div>
+
+              <p class="card-text small text-muted" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                {{ peticion.description }}
+              </p>
+            </div>
+
+            <div class="card-footer bg-white border-0 pt-0 pb-4">
+
+              <div class="progress mb-2" style="height: 6px;">
+                <div class="progress-bar bg-danger" role="progressbar"
+                     [style.width.%]="(peticion.signers || 0) / ((peticion.signers || 0) < 100 ? 100 : (peticion.signers || 0) + 100) * 100">
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-between mb-3">
+                <span class="fw-bold small">{{ peticion.signers || 0 }} firmantes</span>
+                <span class="text-muted small">meta: {{ (peticion.signers || 0) < 100 ? 100 : (peticion.signers || 0) + 100 }}</span>
+              </div>
+
+              @if (currentUser()?.id == peticion.user_id) {
+                <div class="d-flex gap-2 mt-3">
+                  <a [routerLink]="['/peticiones/edit', peticion.id]" class="btn btn-outline-warning w-50 rounded-pill fw-bold">
+                    <i class="bi bi-pencil"></i> Editar
+                  </a>
+                  <button (click)="borrarPeticion(peticion.id)" class="btn btn-outline-danger w-50 rounded-pill fw-bold">
+                    <i class="bi bi-trash"></i> Borrar
+                  </button>
+                </div>
+              }
+            </div>
+
+          </div>
+        </div>
+      }
+    </div>
+  }
+</section>

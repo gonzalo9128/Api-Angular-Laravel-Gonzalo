@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
 | API Routes
 |--------------------------------------------------------------------------
 */
-
+Route::post('/petitions/firmar/{id}', [PetitionController::class, 'firmar']);
 // --- RUTAS PÚBLICAS ---
 // Estas rutas se pueden probar en Postman sin necesidad de Token
 Route::post('login', [AuthController::class, 'login']);
@@ -35,6 +35,10 @@ Route::middleware('auth:api')->group(function () {
     Route::put('petitions/{id}', [PetitionController::class, 'update']); // Editar (si soy dueño)
     Route::delete('petitions/{id}', [PetitionController::class, 'destroy']); // Borrar (si soy dueño)
 
+    // En tu routes/api.php de Laravel
+    Route::get('/categories', function () {
+        return response()->json(App\Models\Category::all());
+    });
     // Acciones Especiales mencionadas en tu PDF
     Route::put('petitions/firmar/{id}', [PetitionController::class, 'firmar']);
     Route::put('petitions/estado/{id}', [PetitionController::class, 'cambiarEstado']);

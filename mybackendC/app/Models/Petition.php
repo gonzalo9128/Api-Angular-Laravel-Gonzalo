@@ -42,4 +42,12 @@ class Petition extends Model
     {
         return $this->belongsToMany(User::class, 'petition_user');
     }
+    // Dentro de app/Models/Petition.php
+
+    public function firmas()
+    {
+        // Esto indica que una petición tiene muchos usuarios que la firman
+        // a través de la tabla pivote (probablemente 'petition_user')
+        return $this->belongsToMany(User::class);
+    }
 }
