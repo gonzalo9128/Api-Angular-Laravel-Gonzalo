@@ -66,6 +66,13 @@ export class ShowComponent implements OnInit {
     return 'https://via.placeholder.com/800x400?text=Sin+Imagen';
   }
 
+  getFileUrl(file: any): string {
+    if (file && file.file_path) {
+      return `http://127.0.0.1:8000/storage/${file.file_path}`;
+    }
+    return '';
+  }
+
   firmar(): void {
     const id = this.petition()?.id;
     if (!id) return;

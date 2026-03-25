@@ -18,7 +18,7 @@ export class CreateComponent implements OnInit {
   private router = inject(Router);
 
   loading = signal(false);
-  fileToUpload: File | null = null;
+  filesToUpload: File[] = [];
 
   // 3. Creamos una variable para guardar las categorías que lleguen
   categorias: any[] = [];
@@ -50,15 +50,14 @@ export class CreateComponent implements OnInit {
   }
 
   onFileSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      this.fileToUpload = file;
+    if (event.target.files.length > 0) {
+      this.filesToUpload = Array.from(event.target.files);
     }
   }
 
   onSubmit() {
-    if (this.itemForm.invalid || !this.fileToUpload) {
-      console.warn('Faltan campos por rellenar o falta la foto');
+    if (this.itemForm.invalid || this.filesToUpload.length === 0) {
+      console.warn('Faltan campos por rellenar o faltan fotos');
       return;
     }
 
@@ -69,7 +68,10 @@ export class CreateComponent implements OnInit {
     formData.append('description', this.itemForm.get('descripcion')?.value);
     formData.append('category_id', this.itemForm.get('categoria_id')?.value);
     formData.append('destinatary', this.itemForm.get('destinatario')?.value);
-    formData.append('file', this.fileToUpload);
+    
+    this.filesToUpload.forEach((file) => {
+      formData.append('files[]', file);
+    });
 
     this.http.post('http://localhost:8000/api/petitions', formData).subscribe({
       next: (response) => {

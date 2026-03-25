@@ -25,7 +25,29 @@
         </div>
 
         <div class="mb-5 rounded overflow-hidden shadow-sm bg-light" style="max-height: 450px;">
-          <img [src]="getImagenUrl()" class="w-100 h-100 object-fit-cover" [alt]="petition()?.title">
+          @if (petition()?.files && petition()?.files.length > 0) {
+            <div [id]="'carouselShow-' + petition()?.id" class="carousel slide h-100" data-bs-ride="carousel">
+              <div class="carousel-inner h-100">
+                @for (file of petition()?.files; track file.id; let i = $index) {
+                  <div class="carousel-item h-100" [class.active]="i === 0">
+                    <img [src]="getFileUrl(file)" class="w-100 h-100 object-fit-cover" [alt]="petition()?.title">
+                  </div>
+                }
+              </div>
+              @if (petition()?.files.length > 1) {
+                <button class="carousel-control-prev" type="button" [attr.data-bs-target]="'#carouselShow-' + petition()?.id" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true" style="filter: drop-shadow(2px 4px 6px black);"></span>
+                  <span class="visually-hidden">Anterior</span>
+                </button>
+                <button class="carousel-control-next" type="button" [attr.data-bs-target]="'#carouselShow-' + petition()?.id" data-bs-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true" style="filter: drop-shadow(2px 4px 6px black);"></span>
+                  <span class="visually-hidden">Siguiente</span>
+                </button>
+              }
+            </div>
+          } @else {
+            <img [src]="getImagenUrl()" class="w-100 h-100 object-fit-cover" [alt]="petition()?.title">
+          }
         </div>
 
         <div class="card border-danger mb-5 shadow-sm rounded-4">

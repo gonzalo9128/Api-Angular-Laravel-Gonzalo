@@ -32,15 +32,15 @@
       </div>
 
       <div class="mb-4">
-        <label class="form-label fw-bold">Imagen de portada</label>
-        <input type="file" (change)="onFileSelected($event)" accept="image/*" class="form-control">
+        <label class="form-label fw-bold">Imágenes adjuntas</label>
+        <input type="file" (change)="onFileSelected($event)" accept="image/*" multiple class="form-control">
       </div>
 
       <div class="d-grid">
-        <button type="submit" [disabled]="itemForm.invalid || loading() || !fileToUpload" class="btn btn-primary btn-lg">
+        <button type="submit" [disabled]="itemForm.invalid || loading() || filesToUpload.length === 0" class="btn btn-primary btn-lg">
           @if (loading()) {
             <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-            Guardando y subiendo imagen...
+            Guardando y subiendo imágenes...
           } @else {
             Publicar Petición
           }

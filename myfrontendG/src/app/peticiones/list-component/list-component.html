@@ -2,12 +2,12 @@
 
   <h2 class="fw-bold mb-4 border-bottom pb-2">Listado de Peticiones</h2>
 
-  @if (cargando) {
+  @if (cargando()) {
     <div class="text-center mt-5">
       <div class="spinner-border text-danger" role="status"></div>
       <p class="mt-2 text-muted">Cargando peticiones...</p>
     </div>
-  } @else if (peticiones.length === 0) {
+  } @else if (peticiones().length === 0) {
     <div class="alert alert-info text-center">
       <h4>Vaya, no hay peticiones todavía.</h4>
       <p>¡Sé el primero en cambiar el mundo!</p>
@@ -15,17 +15,77 @@
     </div>
   } @else {
 
+    <!-- SECCIÓN DE FILTROS -->
+    <div class="row mb-4 align-items-center bg-light p-3 rounded shadow-sm mx-0">
+      <div class="col-md-3 mb-3 mb-md-0">
+        <label class="form-label fw-bold mb-1 text-primary"><i class="bi bi-search me-1"></i>Buscar</label>
+        <input type="text" class="form-control border-primary" placeholder="Buscar petición..." 
+               [ngModel]="searchTerm()" (ngModelChange)="actualizarFiltro('search', $event)">
+      </div>
+      <div class="col-md-3 mb-3 mb-md-0">
+        <label class="form-label fw-bold mb-1 text-primary"><i class="bi bi-tag-fill me-1"></i>Categoría</label>
+        <select class="form-select border-primary cursor-pointer" 
+                [ngModel]="selectedCategory()" (ngModelChange)="actualizarFiltro('category', $event)">
+          <option value="">Todas</option>
+          @for (cat of categorias(); track cat.id) {
+            <option [value]="cat.id">{{ cat.name }}</option>
+          }
+        </select>
+      </div>
+      <div class="col-md-3 mb-3 mb-md-0">
+        <label class="form-label fw-bold mb-1 text-primary"><i class="bi bi-person-check-fill me-1"></i>Estado</label>
+        <select class="form-select border-primary cursor-pointer" 
+                [ngModel]="selectedState()" (ngModelChange)="actualizarFiltro('state', $event)">
+          <option value="">Todas</option>
+          <option value="firmadas">Mis firmas</option>
+          <option value="nofirmadas">No firmadas por mí</option>
+        </select>
+      </div>
+      <div class="col-md-3 text-md-end text-muted">
+        <span class="badge bg-danger rounded-pill px-3 py-2 fs-6 shadow-sm">
+          Mostrando {{ peticionesFiltradas().length }}
+        </span>
+      </div>
+    </div>
+    <!-- FIN FILTROS -->
+
+    @if (peticionesFiltradas().length === 0) {
+      <div class="alert alert-warning text-center mt-4">
+        <h4>No hay peticiones que coincidan con estos filtros.</h4>
+        <p>Prueba a cambiar la categoría o el estado seleccionado.</p>
+        <button class="btn btn-outline-danger mt-2 rounded-pill" (click)="actualizarFiltro('search', ''); actualizarFiltro('category', ''); actualizarFiltro('state', '')">Limpiar filtros</button>
+      </div>
+    }
+
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-      @for (peticion of peticiones; track peticion.id) {
+      @for (peticion of peticionesPaginadas(); track peticion.id) {
         <div class="col">
           <div class="card h-100 shadow-sm border-0 petition-card hover-shadow transition">
 
             <div class="ratio ratio-16x9 bg-light">
               @if (peticion.files && peticion.files.length > 0) {
-                <img [src]="getImagenUrl(peticion)"
-                     class="card-img-top object-fit-cover"
-                     [alt]="peticion.title"
-                     style="height: 200px;">
+                <div [id]="'carousel-' + peticion.id" class="carousel slide">
+                  <div class="carousel-inner h-100">
+                    @for (file of peticion.files; track file.id; let i = $index) {
+                      <div class="carousel-item h-100" [class.active]="i === 0">
+                        <img [src]="getFileUrl(file)"
+                             class="d-block w-100 h-100 object-fit-cover"
+                             [alt]="peticion.title"
+                             style="height: 200px;">
+                      </div>
+                    }
+                  </div>
+                  @if (peticion.files.length > 1) {
+                    <button class="carousel-control-prev" type="button" [attr.data-bs-target]="'#carousel-' + peticion.id" data-bs-slide="prev" (click)="$event.stopPropagation()">
+                      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                      <span class="visually-hidden">Anterior</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" [attr.data-bs-target]="'#carousel-' + peticion.id" data-bs-slide="next" (click)="$event.stopPropagation()">
+                      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                      <span class="visually-hidden">Siguiente</span>
+                    </button>
+                  }
+                </div>
               } @else {
                 <img [src]="'https://picsum.photos/seed/' + peticion.id + '/400/250'"
                      class="card-img-top object-fit-cover"
@@ -83,5 +143,23 @@
         </div>
       }
     </div>
+
+    @if (totalPaginas() > 1) {
+      <nav class="mt-5" aria-label="Navegación de páginas">
+        <ul class="pagination justify-content-center">
+          <li class="page-item" [class.disabled]="paginaActual() === 1">
+            <button class="page-link" (click)="cambiarPagina(paginaActual() - 1)">Anterior</button>
+          </li>
+          
+          <li class="page-item disabled">
+            <span class="page-link text-dark fw-bold">Página {{ paginaActual() }} de {{ totalPaginas() }}</span>
+          </li>
+          
+          <li class="page-item" [class.disabled]="paginaActual() === totalPaginas()">
+            <button class="page-link" (click)="cambiarPagina(paginaActual() + 1)">Siguiente</button>
+          </li>
+        </ul>
+      </nav>
+    }
   }
 </section>

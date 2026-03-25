@@ -37,8 +37,8 @@ class PetitionController extends Controller
     public function index()
     {
         try {
-            // Adaptado: 'categoria' -> 'category'
-            $petitions = Petition::with(['user', 'category', 'files'])->get();
+            // Adaptado: 'categoria' -> 'category' y añadimos 'firmas'
+            $petitions = Petition::with(['user', 'category', 'files', 'firmas'])->get();
             return $this->sendResponse($petitions, 'Peticiones recuperadas con éxito');
         } catch (Exception $e) {
             return $this->sendError('Error al recuperar peticiones', $e->getMessage(), 500);
@@ -75,7 +75,8 @@ class PetitionController extends Controller
             'description' => 'required',
             'destinatary' => 'required',
             'category_id' => 'required|exists:categories,id',
-            'file' => 'required|file|mimes:jpg,jpeg,png,pdf|max:4096',
+            'files' => 'required|array',
+            'files.*' => 'required|file|mimes:jpg,jpeg,png,pdf|max:4096',
         ]);
 
         if ($validator->fails()) {
@@ -83,24 +84,24 @@ class PetitionController extends Controller
         }
 
         try {
-            if ($file = $request->file('file')) {
-                $path = $file->store('petitions', 'public'); // [cite: 230]
-
+            if ($request->hasFile('files')) {
                 $petition = new Petition($request->all());
                 $petition->user_id = Auth::id();
                 $petition->signers = 0; // [cite: 234]
                 $petition->status = 'pending'; // [cite: 235]
                 $petition->save();
 
-                // Relación adaptada [cite: 237]
-                $petition->files()->create([
-                    'name' => $file->getClientOriginalName(),
-                    'file_path' => $path
-                ]);
+                foreach ($request->file('files') as $file) {
+                    $path = $file->store('petitions', 'public'); // [cite: 230]
+                    $petition->files()->create([
+                        'name' => $file->getClientOriginalName(),
+                        'file_path' => $path
+                    ]);
+                }
 
                 return $this->sendResponse($petition->load('files'), 'Petición creada con éxito', 201);
             }
-            return $this->sendError('El archivo es obligatorio', [], 422);
+            return $this->sendError('Al menos un archivo es obligatorio', [], 422);
         } catch (Exception $e) {
             return $this->sendError('Error al crear la petición', $e->getMessage(), 500);
         }
