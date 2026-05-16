@@ -42,5 +42,23 @@ Route::middleware('auth:api')->group(function () {
     // Acciones Especiales mencionadas en tu PDF
     Route::put('petitions/firmar/{id}', [PetitionController::class, 'firmar']);
     Route::put('petitions/estado/{id}', [PetitionController::class, 'cambiarEstado']);
+
+    // --- RUTAS ADMIN ---
+    Route::middleware(['admin'])->group(function () {
+        // Peticiones
+        Route::get('admin/petitions', [\App\Http\Controllers\AdminController::class, 'index']);
+        Route::delete('admin/petitions/{id}', [\App\Http\Controllers\AdminController::class, 'destroy']);
+        Route::put('admin/petitions/{id}', [\App\Http\Controllers\AdminController::class, 'update']);
+        
+        // Usuarios
+        Route::get('admin/users', [\App\Http\Controllers\AdminController::class, 'getUsers']);
+        Route::delete('admin/users/{id}', [\App\Http\Controllers\AdminController::class, 'deleteUser']);
+
+        // Categorías
+        Route::get('admin/categories', [\App\Http\Controllers\AdminController::class, 'getCategories']);
+        Route::post('admin/categories', [\App\Http\Controllers\AdminController::class, 'createCategory']);
+        Route::put('admin/categories/{id}', [\App\Http\Controllers\AdminController::class, 'updateCategory']);
+        Route::delete('admin/categories/{id}', [\App\Http\Controllers\AdminController::class, 'deleteCategory']);
+    });
 });
 Route::middleware('api')->post('refresh', [AuthController::class, 'refresh']);

@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../auth/auth.service';
 
@@ -15,6 +15,7 @@ import { AuthService } from '../../auth/auth.service';
 export class ListComponent implements OnInit {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
+  private route = inject(ActivatedRoute);
 
   peticiones = signal<any[]>([]);
   cargando = signal(true);
@@ -53,6 +54,8 @@ export class ListComponent implements OnInit {
       result = result.filter(p => p.firmas && p.firmas.some((f: any) => f.id === user.id));
     } else if (state === 'nofirmadas' && user) {
       result = result.filter(p => !(p.firmas && p.firmas.some((f: any) => f.id === user.id)));
+    } else if (state === 'mias' && user) {
+      result = result.filter(p => p.user_id === user.id);
     }
 
     return result;
@@ -68,6 +71,11 @@ export class ListComponent implements OnInit {
   });
 
   ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      if (params['filter']) {
+        this.selectedState.set(params['filter']);
+      }
+    });
     this.cargarPeticiones();
   }
 
@@ -76,6 +84,14 @@ export class ListComponent implements OnInit {
       return `http://127.0.0.1:8000/storage/${file.file_path}`;
     }
     return '';
+  }
+
+  getImagenUrl(peticion: any): string {
+    if (peticion.files && peticion.files.length > 0) {
+      const lastFile = peticion.files[peticion.files.length - 1];
+      return `http://127.0.0.1:8000/storage/${lastFile.file_path}`;
+    }
+    return 'https://picsum.photos/seed/' + peticion.id + '/400/250';
   }
 
   cargarPeticiones() {

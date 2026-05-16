@@ -112,8 +112,8 @@ class PetitionController extends Controller
         try {
             $peticion = Petition::findOrFail($id);
 
-            // Cambia 'update' por 'updatePetition'
-            if ($request->user()->cannot('updatePetition', $peticion)) {
+            // Permitir al administrador saltarse la restricción
+            if ($request->user()->cannot('updatePetition', $peticion) && $request->user()->role_id !== 1) {
                 return $this->sendError('No autorizado', [], 403);
             }
 
@@ -152,7 +152,8 @@ class PetitionController extends Controller
         try {
             $petition = Petition::findOrFail($id);
 
-            if ($request->user()->cannot('delete', $petition)) {
+            // Permitir al administrador saltarse la restricción
+            if ($request->user()->cannot('delete', $petition) && $request->user()->role_id !== 1) {
                 return $this->sendError('No autorizado', [], 403);
             }
 
@@ -160,6 +161,9 @@ class PetitionController extends Controller
             foreach ($petition->files as $file) {
                 Storage::disk('public')->delete($file->file_path);
             }
+
+            // Desvincular las firmas antes de borrar
+            $petition->firmas()->detach();
 
             $petition->delete();
             return $this->sendResponse(null, 'Petición eliminada con éxito');

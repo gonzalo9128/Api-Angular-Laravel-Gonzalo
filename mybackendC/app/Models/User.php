@@ -11,6 +11,7 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
+        'role_id',
     ];
     protected $hidden = [
         'password',
@@ -37,7 +38,7 @@ class User extends Authenticatable implements JWTSubject
     }
     public function firmas()
     {
-        return $this->belongsToMany(Petition::class, 'peticione_user');
+        return $this->belongsToMany(Petition::class, 'petition_user');
     }
 
 }

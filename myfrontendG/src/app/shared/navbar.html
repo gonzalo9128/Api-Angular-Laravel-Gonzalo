@@ -14,14 +14,26 @@
         </a>
 
         @if (isLoggedIn()) {
+          <a [routerLink]="['/peticiones']" [queryParams]="{filter: 'mias'}" class="nav-link fw-bold text-dark">
+            Mis Peticiones
+          </a>
+          <a [routerLink]="['/peticiones']" [queryParams]="{filter: 'firmadas'}" class="nav-link fw-bold text-dark me-3">
+            Mis Firmas
+          </a>
+
           <span class="navbar-text me-3 text-muted">
             Hola, <b class="text-danger">{{ currentUser()?.name }}</b>
-
           </span>
 
           <a routerLink="/peticiones/create" class="btn btn-outline-danger rounded-pill fw-bold px-4">
             Crear Petición
           </a>
+
+          @if (currentUser()?.role_id === 1) {
+            <a routerLink="/admin" class="btn btn-dark rounded-pill fw-bold px-4">
+              <i class="bi bi-shield-lock-fill me-1"></i> Admin
+            </a>
+          }
           <button (click)="logout()" class="btn btn-danger rounded-pill fw-bold px-4">
             Salir
           </button>

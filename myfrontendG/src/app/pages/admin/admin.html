@@ -1,0 +1,161 @@
+<div class="d-flex" style="min-height: 100vh;">
+  <!-- Sidebar -->
+  <div class="bg-dark text-white p-3" style="width: 250px;">
+    <h3 class="mb-4 text-center border-bottom pb-2">Admin Panel</h3>
+    <ul class="nav flex-column gap-2">
+      <li class="nav-item">
+        <a class="nav-link text-white rounded fw-bold" 
+           [class.bg-primary]="activeTab() === 'peticiones'"
+           (click)="setTab('peticiones')" style="cursor:pointer">
+           <i class="bi bi-file-earmark-text me-2"></i> Peticiones
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link text-white rounded" 
+           [class.bg-primary]="activeTab() === 'categorias'"
+           (click)="setTab('categorias')" style="cursor:pointer">
+           <i class="bi bi-tags me-2"></i> Categorías
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link text-white rounded" 
+           [class.bg-primary]="activeTab() === 'usuarios'"
+           (click)="setTab('usuarios')" style="cursor:pointer">
+           <i class="bi bi-people me-2"></i> Usuarios
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Main Content -->
+  <div class="flex-grow-1 p-5 bg-light">
+    
+    <!-- PETICIONES -->
+    @if (activeTab() === 'peticiones') {
+      <h2 class="fw-bold mb-4">Gestión de Peticiones</h2>
+      @if (cargando()) {
+        <div class="text-center my-5">
+          <div class="spinner-border text-primary" role="status"></div>
+          <p>Cargando peticiones...</p>
+        </div>
+      } @else {
+        <div class="card shadow-sm border-0">
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover mb-0 align-middle">
+                <thead class="table-dark">
+                  <tr>
+                    <th class="py-3 px-4">ID</th>
+                    <th class="py-3 px-4">Título</th>
+                    <th class="py-3 px-4">Usuario</th>
+                    <th class="py-3 px-4">Categoría</th>
+                    <th class="py-3 px-4">Firmas</th>
+                    <th class="py-3 px-4 text-end">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (peticion of peticiones(); track peticion.id) {
+                    <tr>
+                      <td class="px-4 fw-bold text-muted">#{{ peticion.id }}</td>
+                      <td class="px-4 fw-semibold text-dark">{{ peticion.title }}</td>
+                      <td class="px-4">{{ peticion.user?.name || 'Desconocido' }}</td>
+                      <td class="px-4"><span class="badge bg-secondary">{{ peticion.category?.name || 'N/A' }}</span></td>
+                      <td class="px-4">{{ peticion.signers || peticion.firmas?.length || 0 }}</td>
+                      <td class="px-4 text-end">
+                        <a [routerLink]="['/peticiones/edit', peticion.id]" class="btn btn-sm btn-outline-primary me-2"><i class="bi bi-pencil"></i></a>
+                        <button (click)="borrarPeticion(peticion.id)" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                      </td>
+                    </tr>
+                  } @empty {
+                    <tr>
+                      <td colspan="6" class="text-center py-4 text-muted">No hay peticiones.</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      }
+    }
+
+    <!-- CATEGORIAS -->
+    @if (activeTab() === 'categorias') {
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold m-0">Gestión de Categorías</h2>
+        <button (click)="crearCategoria()" class="btn btn-primary fw-bold">+ Nueva Categoría</button>
+      </div>
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+          <table class="table table-hover mb-0 align-middle">
+            <thead class="table-dark">
+              <tr>
+                <th class="py-3 px-4">ID</th>
+                <th class="py-3 px-4">Nombre</th>
+                <th class="py-3 px-4 text-end">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (cat of categorias(); track cat.id) {
+                <tr>
+                  <td class="px-4 fw-bold text-muted">#{{ cat.id }}</td>
+                  <td class="px-4 fw-semibold text-dark">{{ cat.name }}</td>
+                  <td class="px-4 text-end">
+                    <button (click)="editarCategoria(cat)" class="btn btn-sm btn-outline-primary me-2"><i class="bi bi-pencil"></i></button>
+                    <button (click)="borrarCategoria(cat.id)" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr><td colspan="3" class="text-center py-4 text-muted">No hay categorías.</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+
+    <!-- USUARIOS -->
+    @if (activeTab() === 'usuarios') {
+      <h2 class="fw-bold mb-4">Gestión de Usuarios</h2>
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+          <table class="table table-hover mb-0 align-middle">
+            <thead class="table-dark">
+              <tr>
+                <th class="py-3 px-4">ID</th>
+                <th class="py-3 px-4">Nombre</th>
+                <th class="py-3 px-4">Email</th>
+                <th class="py-3 px-4">Rol</th>
+                <th class="py-3 px-4 text-end">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (user of usuarios(); track user.id) {
+                <tr>
+                  <td class="px-4 fw-bold text-muted">#{{ user.id }}</td>
+                  <td class="px-4 fw-semibold text-dark">{{ user.name }}</td>
+                  <td class="px-4">{{ user.email }}</td>
+                  <td class="px-4">
+                    @if (user.role_id === 1) {
+                      <span class="badge bg-danger">Admin</span>
+                    } @else {
+                      <span class="badge bg-secondary">User</span>
+                    }
+                  </td>
+                  <td class="px-4 text-end">
+                    @if (user.role_id !== 1) {
+                      <button (click)="borrarUsuario(user.id)" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i> Borrar</button>
+                    }
+                  </td>
+                </tr>
+              } @empty {
+                <tr><td colspan="5" class="text-center py-4 text-muted">No hay usuarios.</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+
+  </div>
+</div>

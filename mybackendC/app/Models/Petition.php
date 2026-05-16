@@ -48,6 +48,6 @@ class Petition extends Model
     {
         // Esto indica que una petición tiene muchos usuarios que la firman
         // a través de la tabla pivote (probablemente 'petition_user')
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class, 'petition_user');
     }
 }

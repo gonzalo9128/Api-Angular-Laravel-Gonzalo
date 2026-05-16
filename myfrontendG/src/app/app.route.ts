@@ -8,6 +8,8 @@ import { ShowComponent } from './peticiones/show-component/show-component';
 import { CreateComponent } from './peticiones/create-component/create-component';
 import { EditComponent } from './peticiones/edit-component/edit-component';
 import { authGuard } from './auth/auth-guard';
+import { adminGuard } from './auth/admin-guard-guard';
+import { AdminComponent } from './pages/admin/admin';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -22,6 +24,7 @@ export const routes: Routes = [
   { path: 'peticiones/edit/:id', component: EditComponent, canActivate: [authGuard] },
 
   // 3️⃣ AL FINAL LAS RUTAS DINÁMICAS (el comodín :id)
+  { path: 'admin', component: AdminComponent, canActivate: [adminGuard] },
   { path: 'peticiones/:id', component: ShowComponent },
 
   { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },

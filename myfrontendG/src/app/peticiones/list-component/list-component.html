@@ -32,13 +32,13 @@
           }
         </select>
       </div>
-      <div class="col-md-3 mb-3 mb-md-0">
-        <label class="form-label fw-bold mb-1 text-primary"><i class="bi bi-person-check-fill me-1"></i>Estado</label>
-        <select class="form-select border-primary cursor-pointer" 
-                [ngModel]="selectedState()" (ngModelChange)="actualizarFiltro('state', $event)">
+      <div class="col-md-3">
+        <label class="form-label fw-bold text-muted small text-uppercase">Estado / Relación</label>
+        <select class="form-select border-0 bg-white shadow-sm" [ngModel]="selectedState()" (ngModelChange)="actualizarFiltro('state', $event)">
           <option value="">Todas</option>
-          <option value="firmadas">Mis firmas</option>
+          <option value="firmadas">Firmadas por mí</option>
           <option value="nofirmadas">No firmadas por mí</option>
+          <option value="mias">Mis Peticiones Creadas</option>
         </select>
       </div>
       <div class="col-md-3 text-md-end text-muted">

@@ -22,9 +22,13 @@ export class LoginComponent {
     this.errorMessage = ''; // Reseteamos errores previos
 
     this.auth.login({ email: this.email, password: this.password }).subscribe({
-      next: () => {
-        // Si todo va bien, nos vamos a las peticiones
-        this.router.navigate(['/peticiones']);
+      next: (res: any) => {
+        // res.user vendrá ahora del backend (hemos descomentado la línea)
+        if (res && res.user && res.user.role_id === 1) {
+          this.router.navigate(['/admin']);
+        } else {
+          this.router.navigate(['/peticiones']);
+        }
       },
       error: (err: any) => {
         console.error('LOGIN ERROR', err);
