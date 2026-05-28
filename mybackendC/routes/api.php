@@ -31,6 +31,7 @@ Route::middleware('auth:api')->group(function () {
 
     // Operaciones de Peticiones (CRUD Protegido)
     Route::get('mispetitions', [PetitionController::class, 'listmine']); // Listar mis creaciones
+    Route::get('misfirmas', [PetitionController::class, 'listSigned']); // Listar mis firmas
     Route::post('petitions', [PetitionController::class, 'store']);     // Crear nueva
     Route::put('petitions/{id}', [PetitionController::class, 'update']); // Editar (si soy dueño)
     Route::delete('petitions/{id}', [PetitionController::class, 'destroy']); // Borrar (si soy dueño)
@@ -42,5 +43,19 @@ Route::middleware('auth:api')->group(function () {
     // Acciones Especiales mencionadas en tu PDF
     Route::put('petitions/firmar/{id}', [PetitionController::class, 'firmar']);
     Route::put('petitions/estado/{id}', [PetitionController::class, 'cambiarEstado']);
+
+    // --- RUTAS DE ADMINISTRACIÓN ---
+    Route::middleware('admin')->prefix('admin')->group(function () {
+        Route::get('users', [\App\Http\Controllers\AdminController::class, 'getUsers']);
+        Route::put('users/{id}/role', [\App\Http\Controllers\AdminController::class, 'changeUserRole']);
+        Route::delete('users/{id}', [\App\Http\Controllers\AdminController::class, 'deleteUser']);
+        
+        Route::get('categories', [\App\Http\Controllers\AdminController::class, 'getCategories']);
+        Route::post('categories', [\App\Http\Controllers\AdminController::class, 'storeCategory']);
+        Route::put('categories/{id}', [\App\Http\Controllers\AdminController::class, 'updateCategory']);
+        Route::delete('categories/{id}', [\App\Http\Controllers\AdminController::class, 'deleteCategory']);
+
+        Route::get('petitions', [\App\Http\Controllers\AdminController::class, 'getPetitions']);
+    });
 });
 Route::middleware('api')->post('refresh', [AuthController::class, 'refresh']);

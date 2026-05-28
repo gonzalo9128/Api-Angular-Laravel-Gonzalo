@@ -2,8 +2,8 @@ import {PetitionFile} from "./Petition-File";
 
 export interface Categoria {
   id: number;
-  nombre: string;
-  descripcion?: string;
+  name: string;
+  description?: string;
 }
 
 export interface User {
@@ -14,17 +14,19 @@ export interface User {
 
 export interface Petition {
   id?: number;
-  titulo: string;
-  descripcion: string;
-  destinatario: string;
+  title: string;
+  description: string;
+  destinatary: string;
   user_id?: number;
-  categoria_id?: number;
-  firmantes?: number;
-  estado?: string;
+  category_id?: number;
+  signers?: number;
+  status?: string;
   created_at?: Date;
-// Array de objetos PetitionFile
+  updated_at?: Date;
+  // Array de objetos PetitionFile
   files?: PetitionFile[];
-// Relaciones opcionales
-  categoria?: Categoria;
+  // Relaciones opcionales
+  category?: Categoria;
   user?: User;
+  firmantes?: User[]; // Usuarios que han firmado
 }

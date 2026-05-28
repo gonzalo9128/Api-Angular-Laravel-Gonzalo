@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../auth/auth.service';
 
@@ -15,6 +15,7 @@ import { AuthService } from '../../auth/auth.service';
 export class ListComponent implements OnInit {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
+  private route = inject(ActivatedRoute);
 
   peticiones = signal<any[]>([]);
   cargando = signal(true);
@@ -39,7 +40,6 @@ export class ListComponent implements OnInit {
     const search = this.searchTerm().toLowerCase();
     const cat = this.selectedCategory();
     const state = this.selectedState();
-    const user = this.currentUser();
 
     if (search) {
       result = result.filter(p => p.title?.toLowerCase().includes(search) || p.description?.toLowerCase().includes(search));
@@ -49,10 +49,12 @@ export class ListComponent implements OnInit {
       result = result.filter(p => p.category_id === Number(cat));
     }
 
-    if (state === 'firmadas' && user) {
-      result = result.filter(p => p.firmas && p.firmas.some((f: any) => f.id === user.id));
-    } else if (state === 'nofirmadas' && user) {
-      result = result.filter(p => !(p.firmas && p.firmas.some((f: any) => f.id === user.id)));
+    if (state === 'firmadas') {
+      // Petición firmada por cualquier usuario (tiene al menos una firma)
+      result = result.filter(p => Number(p.signers || 0) > 0 || (p.firmas && p.firmas.length > 0));
+    } else if (state === 'nofirmadas') {
+      // Petición no firmada por nadie (tiene 0 firmas)
+      result = result.filter(p => Number(p.signers || 0) === 0 && (!p.firmas || p.firmas.length === 0));
     }
 
     return result;
@@ -68,7 +70,25 @@ export class ListComponent implements OnInit {
   });
 
   ngOnInit() {
-    this.cargarPeticiones();
+    // Detectar cambios en la ruta para recargar datos
+    this.route.url.subscribe(() => {
+      const ruta = this.route.snapshot.url.map(s => s.path).join('/');
+
+      // Resetear filtros
+      this.searchTerm.set('');
+      this.selectedCategory.set('');
+      this.selectedState.set('');
+      this.paginaActual.set(1);
+
+      // Aplicar filtros según la ruta
+      if (ruta === 'mispetitions') {
+        this.selectedState.set('mispetitions');
+      } else if (ruta === 'misfirmas') {
+        this.selectedState.set('misfirmas');
+      }
+
+      this.cargarPeticiones();
+    });
   }
 
   getFileUrl(file: any): string {
@@ -79,7 +99,15 @@ export class ListComponent implements OnInit {
   }
 
   cargarPeticiones() {
-    this.http.get<any>('http://localhost:8000/api/petitions').subscribe({
+    // Determinar la URL según el estado/ruta
+    let url = 'http://localhost:8000/api/petitions';
+    if (this.selectedState() === 'mispetitions') {
+      url = 'http://localhost:8000/api/mispetitions';
+    } else if (this.selectedState() === 'misfirmas') {
+      url = 'http://localhost:8000/api/misfirmas';
+    }
+
+    this.http.get<any>(url).subscribe({
       next: (res) => {
         const data = res.data || res;
         this.peticiones.set(data);

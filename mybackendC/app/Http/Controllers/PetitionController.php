@@ -57,6 +57,19 @@ class PetitionController extends Controller
         }
     }
 
+    public function listSigned()
+    {
+        try {
+            $user = Auth::user();
+            $petitions = Petition::whereHas('firmas', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })->with(['user', 'category', 'files', 'firmas'])->get();
+            return $this->sendResponse($petitions, 'Peticiones firmadas por ti recuperadas con éxito');
+        } catch (Exception $e) {
+            return $this->sendError('Error al recuperar tus firmas', $e->getMessage(), 500);
+        }
+    }
+
     public function show($id)
     {
         try {

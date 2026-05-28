@@ -8,12 +8,19 @@ import { ShowComponent } from './peticiones/show-component/show-component';
 import { CreateComponent } from './peticiones/create-component/create-component';
 import { EditComponent } from './peticiones/edit-component/edit-component';
 import { authGuard } from './auth/auth-guard';
+import { adminGuard } from './auth/admin-guard';
+import { AdminComponent } from './admin/admin.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'peticiones', component: ListComponent },
+  { path: 'mispetitions', component: ListComponent, canActivate: [authGuard] },
+  { path: 'misfirmas', component: ListComponent, canActivate: [authGuard] },
+
+  // Ruta del Administrador (Backoffice)
+  { path: 'admin', component: AdminComponent, canActivate: [adminGuard] },
 
   // 1️⃣ PRIMERO LA RUTA ESPECÍFICA DE CREAR
   { path: 'peticiones/create', component: CreateComponent, canActivate: [authGuard] },
