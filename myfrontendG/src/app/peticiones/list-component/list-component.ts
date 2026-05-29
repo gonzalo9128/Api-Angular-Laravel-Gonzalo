@@ -21,7 +21,7 @@ export class ListComponent implements OnInit {
   cargando = signal(true);
 
   categorias = signal<any[]>([]);
-  
+
   // Filtros
   searchTerm = signal<string>('');
   selectedCategory = signal<string>('');
@@ -45,10 +45,6 @@ export class ListComponent implements OnInit {
       result = result.filter(p => p.title?.toLowerCase().includes(search) || p.description?.toLowerCase().includes(search));
     }
 
-    if (cat) {
-      result = result.filter(p => p.category_id === Number(cat));
-    }
-
     if (state === 'firmadas') {
       // Petición firmada por cualquier usuario (tiene al menos una firma)
       result = result.filter(p => Number(p.signers || 0) > 0 || (p.firmas && p.firmas.length > 0));
@@ -57,7 +53,55 @@ export class ListComponent implements OnInit {
       result = result.filter(p => Number(p.signers || 0) === 0 && (!p.firmas || p.firmas.length === 0));
     }
 
+    if (cat) {
+      result = result.filter(p => p.category_id === Number(cat));
+    }
     return result;
+  });
+
+  // Filtro de categorías cruzado reactivo (depende del estado y búsqueda activos)
+  categoriasDisponibles = computed(() => {
+    let list = this.peticiones();
+    const search = this.searchTerm().toLowerCase();
+    const state = this.selectedState();
+
+    if (search) {
+      list = list.filter(p => p.title?.toLowerCase().includes(search) || p.description?.toLowerCase().includes(search));
+    }
+    if (state === 'firmadas') {
+      list = list.filter(p => Number(p.signers || 0) > 0 || (p.firmas && p.firmas.length > 0));
+    } else if (state === 'nofirmadas') {
+      list = list.filter(p => Number(p.signers || 0) === 0 && (!p.firmas || p.firmas.length === 0));
+    }
+
+    const uniqueCat = new Map();
+    list.forEach((p: any) => {
+      if (p.category) uniqueCat.set(p.category.id, p.category);
+    });
+    return Array.from(uniqueCat.values());
+  });
+
+  // Filtro de estado cruzado reactivo (depende de la categoría y búsqueda activas)
+  estadosDisponibles = computed(() => {
+    let list = this.peticiones();
+    const search = this.searchTerm().toLowerCase();
+    const cat = this.selectedCategory();
+
+    if (search) {
+      list = list.filter(p => p.title?.toLowerCase().includes(search) || p.description?.toLowerCase().includes(search));
+    }
+
+    if (cat) {
+      list = list.filter(p => p.category_id === Number(cat));
+    }
+
+    const tieneFirmadas = list.some(p => Number(p.signers || 0) > 0 || (p.firmas && p.firmas.length > 0));
+    const tieneNoFirmadas = list.some(p => Number(p.signers || 0) === 0 && (!p.firmas || p.firmas.length === 0));
+
+    return {
+      firmadas: tieneFirmadas,
+      nofirmadas: tieneNoFirmadas
+    };
   });
 
   totalPaginas = computed(() => {
@@ -111,7 +155,9 @@ export class ListComponent implements OnInit {
       next: (res) => {
         const data = res.data || res;
         this.peticiones.set(data);
-        
+        console.log('Peticiones cargadas en list-component:', data);
+
+        // Extraemos dinámicamente solo las categorías con peticiones existentes
         const uniqueCat = new Map();
         data.forEach((p: any) => {
           if (p.category) uniqueCat.set(p.category.id, p.category);
@@ -137,7 +183,7 @@ export class ListComponent implements OnInit {
     if (tipo === 'search') this.searchTerm.set(valor);
     if (tipo === 'category') this.selectedCategory.set(valor);
     if (tipo === 'state') this.selectedState.set(valor);
-    
+
     // Al filtrar, volvemos a la página 1
     this.paginaActual.set(1);
   }

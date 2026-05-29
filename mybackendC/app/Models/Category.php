@@ -9,7 +9,7 @@ use function Symfony\Component\String\u;
 class Category extends Model
 {
     protected $table = 'categories';
-    protected $primaryKey = 'catgeory_id';
+    protected $primaryKey = 'id';
     protected $fillable = ['name'];
 
     public function petitions(){

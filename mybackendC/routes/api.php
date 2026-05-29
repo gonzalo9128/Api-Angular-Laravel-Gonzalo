@@ -19,6 +19,10 @@ Route::post('register', [AuthController::class, 'register']);
 Route::get('petitions', [PetitionController::class, 'index']);
 // Ver el detalle de una petición específica
 Route::get('petitions/{id}', [PetitionController::class, 'show']);
+// Listar todas las categorías de forma pública
+Route::get('categories', function () {
+    return response()->json(App\Models\Category::all());
+});
 
 
 // --- RUTAS PROTEGIDAS (Requieren Token JWT) ---
@@ -30,16 +34,12 @@ Route::middleware('auth:api')->group(function () {
     Route::get('me', [AuthController::class, 'me']);
 
     // Operaciones de Peticiones (CRUD Protegido)
-    Route::get('mispetitions', [PetitionController::class, 'listmine']); // Listar mis creaciones
+    Route::get('mispetitions', [PetitionController::class, 'listMine']); // Listar mis creaciones
     Route::get('misfirmas', [PetitionController::class, 'listSigned']); // Listar mis firmas
     Route::post('petitions', [PetitionController::class, 'store']);     // Crear nueva
     Route::put('petitions/{id}', [PetitionController::class, 'update']); // Editar (si soy dueño)
     Route::delete('petitions/{id}', [PetitionController::class, 'destroy']); // Borrar (si soy dueño)
 
-    // En tu routes/api.php de Laravel
-    Route::get('/categories', function () {
-        return response()->json(App\Models\Category::all());
-    });
     // Acciones Especiales mencionadas en tu PDF
     Route::put('petitions/firmar/{id}', [PetitionController::class, 'firmar']);
     Route::put('petitions/estado/{id}', [PetitionController::class, 'cambiarEstado']);
@@ -49,7 +49,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('users', [\App\Http\Controllers\AdminController::class, 'getUsers']);
         Route::put('users/{id}/role', [\App\Http\Controllers\AdminController::class, 'changeUserRole']);
         Route::delete('users/{id}', [\App\Http\Controllers\AdminController::class, 'deleteUser']);
-        
+
         Route::get('categories', [\App\Http\Controllers\AdminController::class, 'getCategories']);
         Route::post('categories', [\App\Http\Controllers\AdminController::class, 'storeCategory']);
         Route::put('categories/{id}', [\App\Http\Controllers\AdminController::class, 'updateCategory']);

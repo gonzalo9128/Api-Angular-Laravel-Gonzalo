@@ -43,7 +43,7 @@
         <select class="form-select border-primary cursor-pointer" 
                 [ngModel]="selectedCategory()" (ngModelChange)="actualizarFiltro('category', $event)">
           <option value="">Todas</option>
-          @for (cat of categorias(); track cat.id) {
+          @for (cat of categoriasDisponibles(); track cat.id) {
             <option [value]="cat.id">{{ cat.name }}</option>
           }
         </select>
@@ -54,8 +54,12 @@
           <select class="form-select border-primary cursor-pointer" 
                   [ngModel]="selectedState()" (ngModelChange)="actualizarFiltro('state', $event)">
             <option value="">Todas</option>
-            <option value="firmadas">Firmadas</option>
-            <option value="nofirmadas">No firmadas</option>
+            @if (estadosDisponibles().firmadas || selectedState() === 'firmadas') {
+              <option value="firmadas">Firmadas</option>
+            }
+            @if (estadosDisponibles().nofirmadas || selectedState() === 'nofirmadas') {
+              <option value="nofirmadas">No firmadas</option>
+            }
           </select>
         </div>
       }
